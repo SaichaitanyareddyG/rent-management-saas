@@ -25,6 +25,7 @@ Thank you for your interest in contributing to this project! 🎉
 
 ### Backend Setup
 ```bash
+cd backend
 # Configure database in src/main/resources/application.properties
 ./mvnw spring-boot:run
 ```
@@ -57,6 +58,7 @@ npm run dev
 ## 🧪 Testing
 
 ### Backend
+cd backend
 ```bash
 ./mvnw test
 ```

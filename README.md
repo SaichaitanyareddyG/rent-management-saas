@@ -85,7 +85,7 @@ A full-stack, multi-tenant rental property management system with **phone-based 
 
 ### **Backend Architecture**
 ```
-src/main/java/com/rentapp/
+backend/src/main/java/com/rentapp/
 ├── config/          # SecurityConfig, CORS, JWT Filter
 ├── controller/      # REST endpoints (Owner, Property, Room, Tenant, Payment, Public)
 ├── service/         # Business logic layer
@@ -158,6 +158,8 @@ GRANT ALL PRIVILEGES ON DATABASE rent_app TO postgres;
 
 ### **3. Backend Setup**
 ```bash
+cd backend
+
 # Update database credentials in src/main/resources/application.properties
 spring.datasource.url=jdbc:postgresql://localhost:5432/rent_app
 spring.datasource.username=postgres
@@ -351,6 +353,8 @@ npm test
 
 ### **Backend Deployment** (Heroku/AWS/Railway)
 ```bash
+cd backend
+
 # Build JAR
 ./mvnw clean package
 
