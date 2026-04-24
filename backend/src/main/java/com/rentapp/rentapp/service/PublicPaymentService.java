@@ -31,6 +31,7 @@ public class PublicPaymentService {
     
     private final TenantRepository tenantRepository;
     private final PaymentRepository paymentRepository;
+    private final EmailService emailService;
     
     /**
      * Get tenant details for payment page (PUBLIC - no auth)
@@ -179,6 +180,9 @@ public class PublicPaymentService {
             paymentRepository.save(payment);
             
             log.info("Updated existing payment id: {} with UTR: {}", payment.getId(), utr);
+            
+            // Send email notification to owner
+            sendPaymentNotificationEmail(tenant, request.getMonth(), payment.getAmount(), utr);
         } else {
             // Create new payment
             Payment payment = new Payment();
@@ -192,6 +196,25 @@ public class PublicPaymentService {
             paymentRepository.save(payment);
             
             log.info("Created new payment for tenant: {} with UTR: {}", tenant.getId(), utr);
+            
+            // Send email notification to owner
+            sendPaymentNotificationEmail(tenant, request.getMonth(), payment.getAmount(), utr);
+        }
+    }
+    
+    /**
+     * Send email notification to owner about new payment
+     */
+    private void sendPaymentNotificationEmail(Tenant tenant, String month, double amount, String utr) {
+        try {
+            String ownerEmail = tenant.getOwner().getEmail();
+            String tenantName = tenant.getName();
+            
+            emailService.sendPaymentNotification(ownerEmail, tenantName, month, amount, utr);
+            log.info("Payment notification email sent to owner: {}", ownerEmail);
+        } catch (Exception e) {
+            // Don't fail payment confirmation if email fails
+            log.error("Failed to send payment notification email: {}", e.getMessage());
         }
     }
 }

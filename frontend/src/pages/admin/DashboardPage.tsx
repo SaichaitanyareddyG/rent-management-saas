@@ -141,6 +141,65 @@ export const DashboardPage = () => {
 
   return (
     <Box sx={{ p: { xs: 2, md: 3, lg: 4 }, bgcolor: '#f9fafb', minHeight: '100vh' }}>
+      {/* Payment Verification Alert */}
+      {data && data.verifyPayments > 0 && (
+        <Card
+          sx={{
+            mb: 3,
+            borderRadius: 2,
+            border: '2px solid #3B82F6',
+            bgcolor: '#EFF6FF',
+            boxShadow: '0 4px 12px rgba(59, 130, 246, 0.2)',
+          }}
+        >
+          <CardContent>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
+              <Box
+                sx={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: '50%',
+                  bgcolor: '#3B82F6',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  animation: 'pulse 2s ease-in-out infinite',
+                  '@keyframes pulse': {
+                    '0%, 100%': { opacity: 1 },
+                    '50%': { opacity: 0.6 },
+                  },
+                }}
+              >
+                <WarningIcon sx={{ color: 'white', fontSize: 28 }} />
+              </Box>
+              <Box sx={{ flex: 1 }}>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1E40AF', mb: 0.5 }}>
+                  {data.verifyPayments} Payment{data.verifyPayments > 1 ? 's' : ''} Awaiting Verification
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#64748B' }}>
+                  Tenants have submitted payment confirmations. Review and verify them now.
+                </Typography>
+              </Box>
+              <Button
+                variant="contained"
+                sx={{
+                  bgcolor: '#3B82F6',
+                  fontWeight: 'bold',
+                  boxShadow: '0 4px 8px rgba(59, 130, 246, 0.3)',
+                  '&:hover': {
+                    bgcolor: '#2563EB',
+                    boxShadow: '0 6px 12px rgba(59, 130, 246, 0.4)',
+                  },
+                }}
+                onClick={() => window.location.href = '/payments'}
+              >
+                Verify Now
+              </Button>
+            </Box>
+          </CardContent>
+        </Card>
+      )}
+      
       {/* Header with Rental Theme */}
       <Card
         sx={{

@@ -18,6 +18,11 @@ import {
   Typography,
   Button,
   Box,
+  Avatar,
+  Menu,
+  MenuItem,
+  Divider,
+  Badge,
 } from '@mui/material';
 import {
   Dashboard as DashboardIcon,
@@ -29,6 +34,8 @@ import {
   Close as CloseIcon,
   Logout as LogoutIcon,
   Settings as SettingsIcon,
+  AccountCircle as AccountCircleIcon,
+  KeyboardArrowDown as ArrowDownIcon,
 } from '@mui/icons-material';
 
 export const AdminLayout = () => {
@@ -37,10 +44,12 @@ export const AdminLayout = () => {
   const [logout] = useLogoutMutation();
   const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [profileMenuAnchor, setProfileMenuAnchor] = useState<null | HTMLElement>(null);
 
   // Get user from localStorage
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const userName = user.name || 'User';
+  const userEmail = user.email || '';
 
   // Close sidebar when switching to desktop
   useEffect(() => {
@@ -52,6 +61,23 @@ export const AdminLayout = () => {
   const handleLogout = async () => {
     await logout();
     navigate('/login');
+  };
+
+  const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setProfileMenuAnchor(event.currentTarget);
+  };
+
+  const handleProfileMenuClose = () => {
+    setProfileMenuAnchor(null);
+  };
+
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
   };
 
   const navItems = [
@@ -183,29 +209,94 @@ export const AdminLayout = () => {
           </IconButton>
 
           {/* Desktop Spacer */}
-          <div className="hidden md:flex items-center gap-3">
-            <Typography variant="body1" sx={{ fontWeight: 'medium', color: '#374151' }}>
-              Welcome, <strong>{userName}</strong>
-            </Typography>
-          </div>
+          <div className="hidden md:block flex-1"></div>
 
-          {/* Logout Button */}
-          <Button
-            onClick={handleLogout}
-            variant="contained"
-            color="error"
-            startIcon={<LogoutIcon />}
-            sx={{
-              fontWeight: 'bold',
-              textTransform: 'none',
-              boxShadow: 'none',
-              '&:hover': {
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-              },
-            }}
-          >
-            Logout
-          </Button>
+          {/* Profile Dropdown */}
+          <Box>
+            <Button
+              onClick={handleProfileMenuOpen}
+              sx={{
+                textTransform: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+                px: 1.5,
+                py: 0.5,
+                borderRadius: 2,
+                transition: 'all 0.2s',
+                '&:hover': {
+                  bgcolor: '#F3F4F6',
+                },
+              }}
+            >
+              <Avatar
+                sx={{
+                  width: 36,
+                  height: 36,
+                  bgcolor: '#6366F1',
+                  fontSize: '0.9rem',
+                  fontWeight: 'bold',
+                }}
+              >
+                {getInitials(userName)}
+              </Avatar>
+              <Box sx={{ display: { xs: 'none', sm: 'block' }, textAlign: 'left' }}>
+                <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#1F2937', lineHeight: 1.2 }}>
+                  {userName}
+                </Typography>
+                <Typography variant="caption" sx={{ color: '#6B7280', lineHeight: 1 }}>
+                  Owner
+                </Typography>
+              </Box>
+              <ArrowDownIcon sx={{ fontSize: 20, color: '#9CA3AF' }} />
+            </Button>
+
+            <Menu
+              anchorEl={profileMenuAnchor}
+              open={Boolean(profileMenuAnchor)}
+              onClose={handleProfileMenuClose}
+              PaperProps={{
+                sx: {
+                  mt: 1,
+                  minWidth: 220,
+                  borderRadius: 2,
+                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+                },
+              }}
+              transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+              anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+            >
+              <Box sx={{ px: 2, py: 1.5, borderBottom: '1px solid #E5E7EB' }}>
+                <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#1F2937' }}>
+                  {userName}
+                </Typography>
+                <Typography variant="caption" sx={{ color: '#6B7280' }}>
+                  {userEmail}
+                </Typography>
+              </Box>
+              <MenuItem
+                onClick={() => {
+                  handleProfileMenuClose();
+                  navigate('/settings');
+                }}
+                sx={{ gap: 1.5, py: 1.5 }}
+              >
+                <SettingsIcon fontSize="small" sx={{ color: '#6B7280' }} />
+                <Typography variant="body2">Settings</Typography>
+              </MenuItem>
+              <Divider />
+              <MenuItem
+                onClick={() => {
+                  handleProfileMenuClose();
+                  handleLogout();
+                }}
+                sx={{ gap: 1.5, py: 1.5, color: '#EF4444' }}
+              >
+                <LogoutIcon fontSize="small" />
+                <Typography variant="body2">Logout</Typography>
+              </MenuItem>
+            </Menu>
+          </Box>
         </header>
 
         {/* Page Content */}
