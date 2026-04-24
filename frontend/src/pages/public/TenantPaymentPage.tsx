@@ -52,13 +52,25 @@ export const TenantPaymentPage = () => {
     return `upi://pay?pa=${tenant.upiId}&pn=${payeeName}&am=${tenant.rentAmount}&tn=${description}&cu=INR`;
   };
 
+  const isIOS = () => {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+  };
+
   const handlePayViaUpi = () => {
-    const upiLink = generateUpiLink();
+    // iOS doesn't support UPI deep links well - show manual payment instructions
+    if (isIOS()) {
+      toast('📱 iPhone detected! Please pay manually using any UPI app', {
+        duration: 4000,
+        icon: '💡',
+      });
+      setStep('utr');
+      return;
+    }
     
-    // Open UPI deep link - triggers app chooser on mobile
+    // For Android - open UPI deep link
+    const upiLink = generateUpiLink();
     window.open(upiLink, '_self');
     
-    // Show UTR form after brief delay
     setTimeout(() => {
       setStep('utr');
     }, 1500);
@@ -269,26 +281,50 @@ export const TenantPaymentPage = () => {
               {/* Instructions */}
               <Alert severity="info" sx={{ mb: 3 }}>
                 <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
-                  📱 Two Ways to Pay
+                  📱 How to Pay
                 </Typography>
+                {isIOS() && (
+                  <Alert severity="warning" sx={{ mb: 2, py: 1 }}>
+                    <Typography variant="body2" sx={{ fontSize: '0.875rem' }}>
+                      <strong>📱 iPhone Users:</strong> Please pay manually using the UPI ID above. The quick pay button doesn't work on iOS devices.
+                    </Typography>
+                  </Alert>
+                )}
                 <Box component="div" sx={{ mb: 2 }}>
-                  <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 0.5 }}>Option 1: Quick Pay (Mobile Only)</Typography>
+                  <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 0.5 }}>
+                    {isIOS() ? '📱 Manual Payment (iPhone)' : 'Option 1: Quick Pay (Android Only)'}
+                  </Typography>
                   <Box component="ol" sx={{ pl: 2, m: 0, '& li': { mb: 0.5, fontSize: '0.875rem' } }}>
-                    <li>Click "Pay via UPI" button below</li>
-                    <li>Choose your UPI app from popup (GPay, PhonePe, Paytm, etc.)</li>
-                    <li>Complete payment with pre-filled details</li>
-                    <li>Return here and enter UTR number</li>
+                    {isIOS() ? (
+                      <>
+                        <li>Open any UPI app (GPay, PhonePe, Paytm, etc.)</li>
+                        <li>Tap "Send Money" or "Pay"</li>
+                        <li>Enter the UPI ID shown above</li>
+                        <li>Enter amount: ₹{tenant.rentAmount.toLocaleString()}</li>
+                        <li>Complete payment and copy the UTR number</li>
+                        <li>Return here and enter UTR below</li>
+                      </>
+                    ) : (
+                      <>
+                        <li>Click "Pay via UPI" button below</li>
+                        <li>Choose your UPI app from popup (GPay, PhonePe, Paytm, etc.)</li>
+                        <li>Complete payment with pre-filled details</li>
+                        <li>Return here and enter UTR number</li>
+                      </>
+                    )}
                   </Box>
                 </Box>
-                <Box component="div">
-                  <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 0.5 }}>Option 2: Manual Payment</Typography>
-                  <Box component="ol" sx={{ pl: 2, m: 0, '& li': { mb: 0.5, fontSize: '0.875rem' } }}>
-                    <li>Open any UPI app on your phone</li>
-                    <li>Enter the UPI ID shown above</li>
-                    <li>Enter amount: ₹{tenant.rentAmount.toLocaleString()}</li>
-                    <li>Complete payment and enter UTR here</li>
+                {!isIOS() && (
+                  <Box component="div">
+                    <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 0.5 }}>Option 2: Manual Payment</Typography>
+                    <Box component="ol" sx={{ pl: 2, m: 0, '& li': { mb: 0.5, fontSize: '0.875rem' } }}>
+                      <li>Open any UPI app on your phone</li>
+                      <li>Enter the UPI ID shown above</li>
+                      <li>Enter amount: ₹{tenant.rentAmount.toLocaleString()}</li>
+                      <li>Complete payment and enter UTR here</li>
+                    </Box>
                   </Box>
-                </Box>
+                )}
               </Alert>
 
               {/* Pay Button */}
@@ -306,7 +342,10 @@ export const TenantPaymentPage = () => {
                   mb: 2,
                 }}
               >
-                Pay ₹{tenant.rentAmount.toLocaleString()} via UPI
+                {isIOS() 
+                  ? `Continue to Payment (₹${tenant.rentAmount.toLocaleString()})`
+                  : `Pay ₹${tenant.rentAmount.toLocaleString()} via UPI`
+                }
               </Button>
 
               {/* Manual Entry Option */}
