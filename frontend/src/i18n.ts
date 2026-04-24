@@ -10,11 +10,19 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 // Import translations
 import en from './locales/en.json';
 import hi from './locales/hi.json';
+import te from './locales/te.json';
+import ta from './locales/ta.json';
+import kn from './locales/kn.json';
+import mr from './locales/mr.json';
 
 // Available languages
 export const LANGUAGES = [
   { code: 'en', name: 'English', flag: '🇬🇧' },
   { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' },
+  { code: 'te', name: 'తెలుగు', flag: '🇮🇳' },
+  { code: 'ta', name: 'தமிழ்', flag: '🇮🇳' },
+  { code: 'kn', name: 'ಕನ್ನಡ', flag: '🇮🇳' },
+  { code: 'mr', name: 'मराठी', flag: '🇮🇳' },
 ];
 
 // Initialize i18n
@@ -25,6 +33,10 @@ i18n
     resources: {
       en: { translation: en },
       hi: { translation: hi },
+      te: { translation: te },
+      ta: { translation: ta },
+      kn: { translation: kn },
+      mr: { translation: mr },
     },
     
     // Fallback language
