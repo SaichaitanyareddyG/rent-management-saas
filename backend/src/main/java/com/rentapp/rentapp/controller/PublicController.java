@@ -2,8 +2,10 @@ package com.rentapp.rentapp.controller;
 
 import com.rentapp.rentapp.dto.MessageResponse;
 import com.rentapp.rentapp.dto.PaymentConfirmRequest;
+import com.rentapp.rentapp.dto.PaymentSessionResponse;
 import com.rentapp.rentapp.dto.PublicTenantDetailsResponse;
 import com.rentapp.rentapp.service.PublicPaymentService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
  * Used for tenant payment portal
  * 
  * Security: Minimal data exposure, no sensitive info
+ * NEW: Payment intent verification system integrated
  */
 @RestController
 @RequestMapping("/public")
@@ -24,6 +27,19 @@ import org.springframework.web.bind.annotation.*;
 public class PublicController {
     
     private final PublicPaymentService publicPaymentService;
+    
+    /**
+     * NEW: Create payment session with unique amount
+     * Step 1 of payment flow - generates intent token and unique amount
+     */
+    @PostMapping("/payment-session")
+    public ResponseEntity<PaymentSessionResponse> createPaymentSession(
+            @RequestParam Long tenantId,
+            HttpServletRequest request) {
+        log.info("Public API: Creating payment session for tenant: {}", tenantId);
+        PaymentSessionResponse response = publicPaymentService.createPaymentSession(tenantId, request);
+        return ResponseEntity.ok(response);
+    }
     
     /**
      * Get tenant details for payment page (public, no auth)

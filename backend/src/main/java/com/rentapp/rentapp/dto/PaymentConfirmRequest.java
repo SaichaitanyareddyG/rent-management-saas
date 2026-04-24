@@ -21,4 +21,9 @@ public class PaymentConfirmRequest {
     private String utr;  // UPI Transaction Reference
     
     private String notes;
+    
+    // Payment Intent fields (optional for backward compatibility)
+    private String intentToken;  // Payment intent UUID
+    
+    private Double submittedAmount;  // Amount actually paid
 }
