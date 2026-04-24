@@ -30,7 +30,6 @@ import {
   ContactPhone as ContactPhoneIcon,
   SupervisorAccount as SupervisorAccountIcon,
   CreditCard as CreditCardIcon,
-  CurrencyRupee as CurrencyRupeeIcon,
   CalendarMonth as CalendarMonthIcon,
   EventRepeat as EventRepeatIcon,
   Payments as PaymentsIcon,
@@ -38,6 +37,7 @@ import {
 } from '@mui/icons-material';
 import { useCreateTenantMutation } from '../services/adminApi';
 import { useGetAllPropertiesQuery, useGetRoomsByPropertyQuery } from '../services/adminApi';
+import { CurrencyField } from './CurrencyField';
 import toast from 'react-hot-toast';
 import type { TenantRequest } from '../types/api';
 
@@ -380,23 +380,13 @@ export const TenantFormDialog = ({ open, onClose }: TenantFormDialogProps) => {
               </Box>
               
               <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
-                <TextField
+                <CurrencyField
                   label="Monthly Rent"
-                  type="number"
                   value={formData.rentAmount}
-                  onChange={handleChange('rentAmount')}
+                  onChange={(value) => setFormData(prev => ({ ...prev, rentAmount: value }))}
                   required
                   fullWidth
-                  slotProps={{
-                    htmlInput: { min: 0, step: 100 },
-                    input: {
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <CurrencyRupeeIcon color="primary" />
-                        </InputAdornment>
-                      ),
-                    },
-                  }}
+                  helperText="Amount will be formatted as ₹2,00,000"
                 />
 
                 <TextField
@@ -418,22 +408,12 @@ export const TenantFormDialog = ({ open, onClose }: TenantFormDialogProps) => {
                   }}
                 />
 
-                <TextField
+                <CurrencyField
                   label="Advance Amount"
-                  type="number"
                   value={formData.advanceAmount}
-                  onChange={handleChange('advanceAmount')}
+                  onChange={(value) => setFormData(prev => ({ ...prev, advanceAmount: value }))}
                   fullWidth
-                  slotProps={{
-                    htmlInput: { min: 0, step: 100 },
-                    input: {
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <PaymentsIcon color="primary" />
-                        </InputAdornment>
-                      ),
-                    },
-                  }}
+                  helperText="Enter 0 if no advance"
                 />
               </Box>
             </Box>

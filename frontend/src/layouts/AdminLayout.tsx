@@ -8,6 +8,7 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useLogoutMutation } from '../services/authApi';
 import { useGetDashboardSummaryQuery } from '../services/dashboardApi';
 import { useIsMobile } from '../hooks/useResponsive';
+import { useSessionTimeout } from '../hooks/useSessionTimeout';
 import { Badge } from '../components/Badge';
 import {
   Drawer,
@@ -48,7 +49,14 @@ export const AdminLayout = () => {
   const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileMenuAnchor, setProfileMenuAnchor] = useState<null | HTMLElement>(null);
+Session timeout: 30 minutes of inactivity
+  useSessionTimeout({
+    timeout: 30 * 60 * 1000,      // 30 minutes
+    warningTime: 2 * 60 * 1000,   // Warn 2 minutes before
+    enabled: true,                // Enable session timeout
+  });
 
+  // 
   // Get pending verification count
   const pendingVerifications = dashboardData?.verifyPayments || 0;
 
