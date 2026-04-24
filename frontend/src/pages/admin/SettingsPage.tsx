@@ -112,7 +112,7 @@ export const SettingsPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
         <CircularProgress />
       </Box>
     );
@@ -153,7 +153,7 @@ export const SettingsPage: React.FC = () => {
 
         <form onSubmit={handleUpdateProfile}>
           <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
+            <Grid sx={{ gridColumn: { xs: 'span 12', md: 'span 6' } }}>
               <TextField
                 fullWidth
                 label="Full Name"
@@ -163,7 +163,7 @@ export const SettingsPage: React.FC = () => {
                 required
               />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid sx={{ gridColumn: { xs: 'span 12', md: 'span 6' } }}>
               <TextField
                 fullWidth
                 label="Email"
@@ -174,7 +174,7 @@ export const SettingsPage: React.FC = () => {
                 required
               />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid sx={{ gridColumn: { xs: 'span 12', md: 'span 6' } }}>
               <TextField
                 fullWidth
                 label="Phone"
@@ -182,10 +182,10 @@ export const SettingsPage: React.FC = () => {
                 value={profileForm.phone}
                 onChange={handleProfileChange}
                 required
-                inputProps={{ pattern: '[0-9]{10}' }}
+                slotProps={{ htmlInput: { pattern: '[0-9]{10}' } }}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid sx={{ gridColumn: 'span 12' }}>
               <Button
                 type="submit"
                 variant="contained"
@@ -214,7 +214,7 @@ export const SettingsPage: React.FC = () => {
 
         <form onSubmit={handleChangePassword}>
           <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
+            <Grid sx={{ gridColumn: { xs: 'span 12', md: 'span 6' } }}>
               <TextField
                 fullWidth
                 label="Current Password"
@@ -225,7 +225,7 @@ export const SettingsPage: React.FC = () => {
                 required
               />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid sx={{ gridColumn: { xs: 'span 12', md: 'span 6' } }}>
               <TextField
                 fullWidth
                 label="New Password"
@@ -237,7 +237,7 @@ export const SettingsPage: React.FC = () => {
                 helperText="Minimum 6 characters"
               />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid sx={{ gridColumn: { xs: 'span 12', md: 'span 6' } }}>
               <TextField
                 fullWidth
                 label="Confirm New Password"
