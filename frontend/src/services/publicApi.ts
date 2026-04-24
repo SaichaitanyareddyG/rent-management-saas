@@ -7,6 +7,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type {
   PublicTenantDetailsResponse,
   PaymentConfirmRequest,
+  PaymentSessionResponse,
   MessageResponse,
 } from '../types/api';
 
@@ -22,7 +23,7 @@ export const publicApi = createApi({
       return headers;
     },
   }),
-  tagTypes: ['PublicTenant', 'PublicPayment'],
+  tagTypes: ['PublicTenant', 'PublicPayment', 'PaymentSession'],
   endpoints: (builder) => ({
     // Get tenant details for payment page (public access)
     getTenantForPayment: builder.query<PublicTenantDetailsResponse, number>({
@@ -30,7 +31,16 @@ export const publicApi = createApi({
       providesTags: (_result, _error, id) => [{ type: 'PublicTenant', id }],
     }),
 
-    // Confirm payment with UTR (public)
+    // NEW: Create payment session with unique amount for verification
+    createPaymentSession: builder.mutation<PaymentSessionResponse, number>({
+      query: (tenantId) => ({
+        url: `/public/payment-session?tenantId=${tenantId}`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['PaymentSession'],
+    }),
+
+    // Confirm payment with UTR (public) - updated to support verification
     confirmPayment: builder.mutation<MessageResponse, PaymentConfirmRequest>({
       query: (data) => ({
         url: '/public/payments/confirm',
@@ -44,5 +54,6 @@ export const publicApi = createApi({
 
 export const {
   useGetTenantForPaymentQuery,
+  useCreatePaymentSessionMutation,
   useConfirmPaymentMutation,
 } = publicApi;

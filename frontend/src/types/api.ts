@@ -227,6 +227,8 @@ export interface PaymentConfirmRequest {
   month: string;
   utr: string;
   notes?: string;
+  intentToken?: string;  // NEW: Payment intent verification token
+  submittedAmount?: number;  // NEW: Amount actually paid
 }
 
 export interface PaymentIntent {
@@ -238,6 +240,33 @@ export interface PaymentIntent {
   status: string;
   createdAt: string;
   completedAt: string | null;
+}
+
+// NEW: Payment session with unique amount for verification
+export interface PaymentSessionResponse {
+  intentToken: string;
+  tenantId: number;
+  tenantName: string;
+  baseAmount: number;
+  uniqueAmount: number;
+  amountOffset: number;
+  createdAt: string;
+  expiresAt: string;
+  validityMinutes: number;
+  upiId: string;
+  ownerName: string;
+  propertyName: string;
+  roomNumber: string;
+  currentMonth: string;
+}
+
+// NEW: Verification score response
+export interface VerificationScoreResponse {
+  confidenceScore: number;
+  status: string;  // HIGH, MEDIUM, LOW
+  recommendation: string;
+  factors: Record<string, any>;
+  autoApproved: boolean;
 }
 
 // Paginated Response
