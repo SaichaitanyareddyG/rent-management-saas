@@ -6,7 +6,7 @@
 import { useState, useEffect } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useLogoutMutation } from '../services/authApi';
-import { useGetDashboardStatsQuery } from '../services/dashboardApi';
+import { useGetDashboardSummaryQuery } from '../services/dashboardApi';
 import { useIsMobile } from '../hooks/useResponsive';
 import { Badge } from '../components/Badge';
 import {
@@ -44,7 +44,7 @@ export const AdminLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [logout] = useLogoutMutation();
-  const { data: dashboardData } = useGetDashboardStatsQuery();
+  const { data: dashboardData } = useGetDashboardSummaryQuery();
   const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileMenuAnchor, setProfileMenuAnchor] = useState<null | HTMLElement>(null);

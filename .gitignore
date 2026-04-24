@@ -42,6 +42,7 @@ build/
 ### Secrets ###
 **/application-prod.properties
 **/application-secrets.properties
+GOOGLE_OAUTH_CREDENTIALS.md
 
 ### OS Files ###
 .DS_Store
