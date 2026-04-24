@@ -6,6 +6,7 @@
 import { useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 
 interface UseSessionTimeoutOptions {
@@ -44,6 +45,7 @@ export const useSessionTimeout = (options: UseSessionTimeoutOptions = {}) => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const timeoutRef = useRef<NodeJS.Timeout>();
   const warningRef = useRef<NodeJS.Timeout>();
 
@@ -53,20 +55,20 @@ export const useSessionTimeout = (options: UseSessionTimeoutOptions = {}) => {
     localStorage.removeItem('user');
     
     // Show logout message
-    toast.error('⏱️ Session expired due to inactivity. Please login again.', {
+    toast.error(t('messages.sessionExpired'), {
       duration: 5000,
     });
     
     // Navigate to login
     navigate('/login', { replace: true });
-  }, [navigate, dispatch]);
+  }, [navigate, dispatch, t]);
 
   const showWarning = useCallback(() => {
-    toast('⚠️ Your session will expire in 2 minutes due to inactivity', {
+    toast(t('messages.sessionExpiring'), {
       icon: '⏰',
       duration: 10000,
     });
-  }, []);
+  }, [t]);
 
   const resetTimer = useCallback(() => {
     if (!enabled) return;

@@ -1,6 +1,6 @@
 /**
  * Main Entry Point
- * Redux Store Provider + Toast Notifications + MUI Theme + Google OAuth
+ * Redux Store Provider + Toast Notifications + MUI Theme + Google OAuth + i18n
  */
 
 import { StrictMode } from 'react';
@@ -12,6 +12,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import { store } from './app/store';
 import { ToastProvider } from './components/ToastProvider';
 import { config } from './config/env';
+import './i18n'; // Initialize i18n
 import App from './App';
 import './index.css';
 

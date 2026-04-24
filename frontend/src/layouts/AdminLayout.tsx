@@ -5,11 +5,13 @@
 
 import { useState, useEffect } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useLogoutMutation } from '../services/authApi';
 import { useGetDashboardSummaryQuery } from '../services/dashboardApi';
 import { useIsMobile } from '../hooks/useResponsive';
 import { useSessionTimeout } from '../hooks/useSessionTimeout';
 import { Badge } from '../components/Badge';
+import { LanguageSelector } from '../components/LanguageSelector';
 import {
   Drawer,
   List,
@@ -44,6 +46,7 @@ import {
 export const AdminLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
   const [logout] = useLogoutMutation();
   const { data: dashboardData } = useGetDashboardSummaryQuery();
   const isMobile = useIsMobile();
@@ -94,12 +97,12 @@ Session timeout: 30 minutes of inactivity
       .slice(0, 2);
   };
 
-  const navItems = [
-    { path: '/dashboard', label: 'Dashboard', icon: <DashboardIcon /> },
-    { path: '/tenants', label: 'Tenants', icon: <PeopleIcon /> },
-    { path: '/payments', label: 'Payments', icon: <PaymentIcon /> },
-    { path: '/properties', label: 'Properties', icon: <HomeIcon /> },
-    { path: '/rooms', label: 'Rooms', icon: <RoomIcon /> },
+  const navItems = [t('nav.dashboard'), icon: <DashboardIcon /> },
+    { path: '/tenants', label: t('nav.tenants'), icon: <PeopleIcon /> },
+    { path: '/payments', label: t('nav.payments'), icon: <PaymentIcon /> },
+    { path: '/properties', label: t('nav.properties'), icon: <HomeIcon /> },
+    { path: '/rooms', label: t('nav.rooms'), icon: <RoomIcon /> },
+    { path: '/settings', label: t('nav.settings'): <RoomIcon /> },
     { path: '/settings', label: 'Settings', icon: <SettingsIcon /> },
   ];
 
@@ -258,6 +261,11 @@ Session timeout: 30 minutes of inactivity
           {/* Desktop Spacer */}
           <div className="hidden md:block flex-1"></div>
 
+          {/* Language Selector */}
+          <Box sx={{ mr: 2 }}>
+            <LanguageSelector variant="icon" showLabel={false} />
+          </Box>
+
           {/* Profile Dropdown */}
           <Box>
             <Button
@@ -324,18 +332,18 @@ Session timeout: 30 minutes of inactivity
               <MenuItem
                 onClick={() => {
                   handleProfileMenuClose();
-                  navigate('/settings');
-                }}
-                sx={{ gap: 1.5, py: 1.5 }}
-              >
-                <SettingsIcon fontSize="small" sx={{ color: '#6B7280' }} />
-                <Typography variant="body2">Settings</Typography>
+                  navigate('/settings');{t('nav.settings')}</Typography>
               </MenuItem>
               <Divider />
               <MenuItem
                 onClick={() => {
                   handleProfileMenuClose();
                   handleLogout();
+                }}
+                sx={{ gap: 1.5, py: 1.5, color: '#EF4444' }}
+              >
+                <LogoutIcon fontSize="small" />
+                <Typography variant="body2">{t('common.logout')}
                 }}
                 sx={{ gap: 1.5, py: 1.5, color: '#EF4444' }}
               >
