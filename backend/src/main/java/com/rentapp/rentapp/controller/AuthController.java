@@ -1,6 +1,7 @@
 package com.rentapp.rentapp.controller;
 
 import com.rentapp.rentapp.dto.ForgotPasswordRequest;
+import com.rentapp.rentapp.dto.GoogleLoginRequest;
 import com.rentapp.rentapp.dto.LoginRequest;
 import com.rentapp.rentapp.dto.LoginResponse;
 import com.rentapp.rentapp.dto.MessageResponse;
@@ -55,6 +56,17 @@ public class AuthController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest()
                     .body(new MessageResponse(e.getMessage()));
+        }
+    }
+    
+    @PostMapping("/google")
+    public ResponseEntity<LoginResponse> googleLogin(@Valid @RequestBody GoogleLoginRequest request) {
+        try {
+            LoginResponse response = authService.googleLogin(request);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest()
+                    .body(null);
         }
     }
 }

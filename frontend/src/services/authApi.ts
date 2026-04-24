@@ -62,6 +62,24 @@ export const authApi = api.injectEndpoints({
         return { data: undefined };
       },
     }),
+    googleLogin: builder.mutation<LoginResponse, { idToken: string; phone?: string }>({
+      query: (data) => ({
+        url: '/auth/google',
+        method: 'POST',
+        body: data,
+      }),
+      transformResponse: (response: LoginResponse) => {
+        // Store token and user data
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('user', JSON.stringify({
+          id: response.owner.id,
+          name: response.owner.name,
+          email: response.owner.email,
+          phone: response.owner.phone,
+        }));
+        return response;
+      },
+    }),
   }),
 });
 
@@ -70,5 +88,6 @@ export const {
   useRegisterMutation, 
   useForgotPasswordMutation,
   useResetPasswordMutation,
-  useLogoutMutation 
+  useLogoutMutation,
+  useGoogleLoginMutation 
 } = authApi;

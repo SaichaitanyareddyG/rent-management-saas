@@ -1,6 +1,6 @@
 /**
  * Main Entry Point
- * Redux Store Provider + Toast Notifications + MUI Theme
+ * Redux Store Provider + Toast Notifications + MUI Theme + Google OAuth
  */
 
 import { StrictMode } from 'react';
@@ -8,8 +8,10 @@ import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import { store } from './app/store';
 import { ToastProvider } from './components/ToastProvider';
+import { config } from './config/env';
 import App from './App';
 import './index.css';
 
@@ -63,12 +65,14 @@ const theme = createTheme({
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <Provider store={store}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <App />
-        <ToastProvider />
-      </ThemeProvider>
-    </Provider>
+    <GoogleOAuthProvider clientId={config.google.clientId}>
+      <Provider store={store}>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <App />
+          <ToastProvider />
+        </ThemeProvider>
+      </Provider>
+    </GoogleOAuthProvider>
   </StrictMode>
 );

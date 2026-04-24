@@ -6,7 +6,9 @@
 import { useState, useEffect } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useLogoutMutation } from '../services/authApi';
+import { useGetDashboardStatsQuery } from '../services/dashboardApi';
 import { useIsMobile } from '../hooks/useResponsive';
+import { Badge } from '../components/Badge';
 import {
   Drawer,
   List,
@@ -22,7 +24,7 @@ import {
   Menu,
   MenuItem,
   Divider,
-  Badge,
+  Badge as MuiBadge,
 } from '@mui/material';
 import {
   Dashboard as DashboardIcon,
@@ -42,9 +44,13 @@ export const AdminLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [logout] = useLogoutMutation();
+  const { data: dashboardData } = useGetDashboardStatsQuery();
   const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileMenuAnchor, setProfileMenuAnchor] = useState<null | HTMLElement>(null);
+
+  // Get pending verification count
+  const pendingVerifications = dashboardData?.verifyPayments || 0;
 
   // Get user from localStorage
   const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -116,6 +122,8 @@ export const AdminLayout = () => {
       <List sx={{ p: 2, flexGrow: 1 }}>
         {navItems.map((item) => {
           const isActive = location.pathname === item.path;
+          const showBadge = item.path === '/payments' && pendingVerifications > 0;
+          
           return (
             <ListItem key={item.path} disablePadding sx={{ mb: 1 }}>
               <ListItemButton
@@ -124,8 +132,10 @@ export const AdminLayout = () => {
                   borderRadius: '8px',
                   backgroundColor: isActive ? '#6366f1' : 'transparent',
                   color: isActive ? '#ffffff' : '#374151',
+                  transition: 'all 0.3s ease',
                   '&:hover': {
                     backgroundColor: isActive ? '#4f46e5' : '#f3f4f6',
+                    transform: 'translateX(4px)',
                   },
                   py: 1.5,
                 }}
@@ -136,7 +146,13 @@ export const AdminLayout = () => {
                     minWidth: '40px',
                   }}
                 >
-                  {item.icon}
+                  {showBadge ? (
+                    <Badge count={pendingVerifications}>
+                      {item.icon}
+                    </Badge>
+                  ) : (
+                    item.icon
+                  )}
                 </ListItemIcon>
                 <ListItemText
                   primary={item.label}
@@ -190,6 +206,21 @@ export const AdminLayout = () => {
         }}
         ModalProps={{
           keepMounted: true, // Better mobile performance
+          slotProps: {
+            backdrop: {
+              sx: {
+                backdropFilter: 'blur(4px)',
+                backgroundColor: 'rgba(0, 0, 0, 0.3)',
+              },
+            },
+          },
+        }}
+        slotProps={{
+          paper: {
+            sx: {
+              transition: 'transform 0.3s ease-in-out !important',
+            },
+          },
         }}
       >
         {drawerContent}
@@ -202,7 +233,15 @@ export const AdminLayout = () => {
           {/* Mobile Menu Button */}
           <IconButton
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            sx={{ display: { xs: 'block', md: 'none' } }}
+            sx={{ 
+              display: { xs: 'block', md: 'none' },
+              transition: 'all 0.3s ease',
+              transform: sidebarOpen ? 'rotate(90deg)' : 'rotate(0deg)',
+              '&:hover': {
+                bgcolor: '#F3F4F6',
+                transform: sidebarOpen ? 'rotate(90deg) scale(1.1)' : 'rotate(0deg) scale(1.1)',
+              }
+            }}
             size="large"
           >
             {sidebarOpen ? <CloseIcon /> : <MenuIcon />}

@@ -17,6 +17,7 @@ import {
 } from '@mui/material';
 import toast from 'react-hot-toast';
 import { useLoginMutation } from '../services/authApi';
+import { GoogleSignInButton } from '../components/GoogleSignInButton';
 import type { LoginRequest } from '../types/api';
 
 export const LoginPage = () => {
@@ -180,6 +181,9 @@ export const LoginPage = () => {
               'Sign In'
             )}
           </Button>
+          
+          {/* Google Sign-In */}
+          <GoogleSignInButton />
         </Box>
 
         {/* Demo Credentials */}

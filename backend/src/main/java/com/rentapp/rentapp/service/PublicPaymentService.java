@@ -207,7 +207,7 @@ public class PublicPaymentService {
      */
     private void sendPaymentNotificationEmail(Tenant tenant, String month, double amount, String utr) {
         try {
-            String ownerEmail = tenant.getOwner().getEmail();
+            String ownerEmail = tenant.getProperty().getOwner().getEmail();
             String tenantName = tenant.getName();
             
             emailService.sendPaymentNotification(ownerEmail, tenantName, month, amount, utr);

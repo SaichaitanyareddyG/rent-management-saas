@@ -36,6 +36,16 @@ public class Owner {
     private String phone;
     
     @Column
+    @Enumerated(EnumType.STRING)
+    private AuthProvider authProvider = AuthProvider.STANDARD;
+    
+    @Column(unique = true)
+    private String googleId;
+    
+    @Column
+    private Boolean profileComplete = true;
+    
+    @Column
     private String resetToken;
     
     @Column
