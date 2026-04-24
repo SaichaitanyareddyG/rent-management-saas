@@ -9,10 +9,17 @@ export interface LoginRequest {
   password: string;
 }
 
+export interface OwnerResponse {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+}
+
 export interface LoginResponse {
   token: string;
-  email: string;
-  ownerId: number;
+  type: string;
+  owner: OwnerResponse;
 }
 
 export interface RegisterRequest {

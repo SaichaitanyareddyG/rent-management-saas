@@ -26,8 +26,10 @@ export const authApi = api.injectEndpoints({
         // Store token in localStorage
         localStorage.setItem('token', response.token);
         localStorage.setItem('user', JSON.stringify({
-          email: response.email,
-          ownerId: response.ownerId,
+          id: response.owner.id,
+          name: response.owner.name,
+          email: response.owner.email,
+          phone: response.owner.phone,
         }));
         return response;
       },

@@ -32,7 +32,7 @@ export const LoginPage = () => {
     e.preventDefault();
     try {
       const result = await login(formData).unwrap();
-      toast.success(`✅ Welcome back, ${result.email}!`);
+      toast.success(`✅ Welcome back, ${result.owner.name}!`);
       navigate('/dashboard');
     } catch (err) {
       console.error('Login failed:', err);

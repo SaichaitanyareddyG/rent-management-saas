@@ -38,6 +38,10 @@ export const AdminLayout = () => {
   const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  // Get user from localStorage
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const userName = user.name || 'User';
+
   // Close sidebar when switching to desktop
   useEffect(() => {
     if (!isMobile) {
@@ -179,7 +183,11 @@ export const AdminLayout = () => {
           </IconButton>
 
           {/* Desktop Spacer */}
-          <div className="hidden md:block"></div>
+          <div className="hidden md:flex items-center gap-3">
+            <Typography variant="body1" sx={{ fontWeight: 'medium', color: '#374151' }}>
+              Welcome, <strong>{userName}</strong>
+            </Typography>
+          </div>
 
           {/* Logout Button */}
           <Button
