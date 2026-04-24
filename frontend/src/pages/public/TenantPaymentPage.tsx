@@ -32,6 +32,42 @@ import {
   ContentCopy as CopyIcon,
 } from '@mui/icons-material';
 
+// UPI Apps Configuration with app-specific deep links
+const UPI_APPS = [
+  {
+    id: 'gpay',
+    name: 'Google Pay',
+    icon: '💰',
+    color: '#4285f4',
+    deepLink: (upiId: string, name: string, amount: number, note: string) =>
+      `gpay://upi/pay?pa=${upiId}&pn=${encodeURIComponent(name)}&am=${amount}&tn=${encodeURIComponent(note)}&cu=INR`,
+  },
+  {
+    id: 'phonepe',
+    name: 'PhonePe',
+    icon: '📱',
+    color: '#5f259f',
+    deepLink: (upiId: string, name: string, amount: number, note: string) =>
+      `phonepe://pay?pa=${upiId}&pn=${encodeURIComponent(name)}&am=${amount}&tn=${encodeURIComponent(note)}&cu=INR`,
+  },
+  {
+    id: 'paytm',
+    name: 'Paytm',
+    icon: '💳',
+    color: '#00baf2',
+    deepLink: (upiId: string, name: string, amount: number, note: string) =>
+      `paytmmp://pay?pa=${upiId}&pn=${encodeURIComponent(name)}&am=${amount}&tn=${encodeURIComponent(note)}&cu=INR`,
+  },
+  {
+    id: 'bhim',
+    name: 'BHIM',
+    icon: '💵',
+    color: '#097bed',
+    deepLink: (upiId: string, name: string, amount: number, note: string) =>
+      `bhim://pay?pa=${upiId}&pn=${encodeURIComponent(name)}&am=${amount}&tn=${encodeURIComponent(note)}&cu=INR`,
+  },
+];
+
 export const TenantPaymentPage = () => {
   const { tenantId } = useParams<{ tenantId: string }>();
   const navigate = useNavigate();
@@ -42,6 +78,7 @@ export const TenantPaymentPage = () => {
   const [step, setStep] = useState<'details' | 'utr'>('details');
   const [utr, setUtr] = useState('');
   const [notes, setNotes] = useState('');
+  const [appNotInstalled, setAppNotInstalled] = useState(false);
 
   const generateUpiLink = () => {
     if (!tenant) return '';
@@ -56,18 +93,36 @@ export const TenantPaymentPage = () => {
     return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
   };
 
-  const handlePayViaUpi = () => {
-    // iOS doesn't support UPI deep links well - show manual payment instructions
-    if (isIOS()) {
-      toast('📱 iPhone detected! Please pay manually using any UPI app', {
-        duration: 4000,
-        icon: '💡',
-      });
+  const handleUpiAppClick = (app: typeof UPI_APPS[0]) => {
+    if (!tenant) return;
+
+    const note = `Rent-${tenant.currentMonth}-${tenant.roomNumber}`;
+    const deepLink = app.deepLink(tenant.upiId, tenant.ownerName || 'Property Owner', tenant.rentAmount, note);
+
+    // Try to open the app
+    const beforeTime = Date.now();
+    window.location.href = deepLink;
+
+    // Fallback detection: if app didn't open after 2 seconds, show manual payment
+    setTimeout(() => {
+      const afterTime = Date.now();
+      // If less than 2500ms passed, likely the app didn't open (page still has focus)
+      if (afterTime - beforeTime < 2500) {
+        setAppNotInstalled(true);
+        toast.error(`${app.name} not installed. Use manual payment below.`, {
+          duration: 4000,
+        });
+      }
+    }, 2000);
+
+    // Show UTR form after delay
+    setTimeout(() => {
       setStep('utr');
-      return;
-    }
-    
-    // For Android - open UPI deep link
+    }, 2500);
+  };
+
+  const handlePayViaUpi = () => {
+    // Generic UPI deep link as fallback (works on Android)
     const upiLink = generateUpiLink();
     window.open(upiLink, '_self');
     
@@ -237,6 +292,70 @@ export const TenantPaymentPage = () => {
                 </Typography>
               </Box>
 
+              {/* UPI App Chooser */}
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: 'text.primary' }}>
+                  💳 Choose Your UPI App
+                </Typography>
+                <Box
+                  sx={{
+                    display: 'grid',
+                    gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(4, 1fr)' },
+                    gap: 2,
+                    mb: 2,
+                  }}
+                >
+                  {UPI_APPS.map((app) => (
+                    <Button
+                      key={app.id}
+                      variant="outlined"
+                      onClick={() => handleUpiAppClick(app)}
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 1,
+                        p: 2.5,
+                        borderRadius: 2,
+                        border: '2px solid',
+                        borderColor: '#e5e7eb',
+                        bgcolor: 'white',
+                        transition: 'all 0.2s',
+                        '&:hover': {
+                          borderColor: app.color,
+                          bgcolor: `${app.color}10`,
+                          transform: 'translateY(-2px)',
+                          boxShadow: `0 4px 12px ${app.color}30`,
+                        },
+                      }}
+                    >
+                      <Typography sx={{ fontSize: '2rem', lineHeight: 1 }}>{app.icon}</Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          fontWeight: 'bold',
+                          color: 'text.primary',
+                          fontSize: '0.75rem',
+                        }}
+                      >
+                        {app.name}
+                      </Typography>
+                    </Button>
+                  ))}
+                </Box>
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', textAlign: 'center' }}>
+                  Tap any app to pay instantly (if installed)
+                </Typography>
+              </Box>
+
+              {/* Divider */}
+              <Box sx={{ display: 'flex', alignItems: 'center', my: 3 }}>
+                <Box sx={{ flex: 1, height: '1px', bgcolor: '#e5e7eb' }} />
+                <Typography variant="caption" sx={{ px: 2, color: 'text.secondary' }}>
+                  OR
+                </Typography>
+                <Box sx={{ flex: 1, height: '1px', bgcolor: '#e5e7eb' }} />
+              </Box>
+
               {/* UPI ID Display Box - For Manual Entry */}
               <Box
                 sx={{
@@ -248,7 +367,7 @@ export const TenantPaymentPage = () => {
                 }}
               >
                 <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: '#059669', mb: 1 }}>
-                  💳 Owner's UPI ID
+                  💳 Pay Manually Using UPI ID
                 </Typography>
                 <Box
                   sx={{
@@ -272,9 +391,22 @@ export const TenantPaymentPage = () => {
                   >
                     {tenant.upiId}
                   </Typography>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={handleCopyUpiId}
+                    startIcon={<CopyIcon />}
+                    sx={{
+                      minWidth: 'auto',
+                      ml: 1,
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    Copy
+                  </Button>
                 </Box>
                 <Typography variant="caption" color="text.secondary">
-                  Use this UPI ID to pay manually from any UPI app (GPay, PhonePe, Paytm, etc.)
+                  Open any UPI app, send money to this UPI ID, then return here to enter UTR
                 </Typography>
               </Box>
 
@@ -283,80 +415,50 @@ export const TenantPaymentPage = () => {
                 <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
                   📱 How to Pay
                 </Typography>
-                {isIOS() && (
-                  <Alert severity="warning" sx={{ mb: 2, py: 1 }}>
+                <Box component="div" sx={{ mb: 1.5 }}>
+                  <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 0.5 }}>
+                    Quick Pay (Tap an App Icon)
+                  </Typography>
+                  <Box component="ol" sx={{ pl: 2, m: 0, '& li': { mb: 0.5, fontSize: '0.875rem' } }}>
+                    <li>Tap any UPI app icon above (GPay, PhonePe, etc.)</li>
+                    <li>App opens with pre-filled payment details</li>
+                    <li>Complete payment in the app</li>
+                    <li>Return here and enter UTR number</li>
+                  </Box>
+                </Box>
+                <Box component="div">
+                  <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 0.5 }}>Manual Payment</Typography>
+                  <Box component="ol" sx={{ pl: 2, m: 0, '& li': { mb: 0.5, fontSize: '0.875rem' } }}>
+                    <li>Copy the UPI ID above</li>
+                    <li>Open any UPI app on your phone</li>
+                    <li>Send ₹{tenant.rentAmount.toLocaleString()} to the UPI ID</li>
+                    <li>Return here and enter UTR</li>
+                  </Box>
+                </Box>
+                {appNotInstalled && (
+                  <Alert severity="warning" sx={{ mt: 2, py: 1 }}>
                     <Typography variant="body2" sx={{ fontSize: '0.875rem' }}>
-                      <strong>📱 iPhone Users:</strong> Please pay manually using the UPI ID above. The quick pay button doesn't work on iOS devices.
+                      <strong>App not installed?</strong> Use the manual payment method with UPI ID above.
                     </Typography>
                   </Alert>
                 )}
-                <Box component="div" sx={{ mb: 2 }}>
-                  <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 0.5 }}>
-                    {isIOS() ? '📱 Manual Payment (iPhone)' : 'Option 1: Quick Pay (Android Only)'}
-                  </Typography>
-                  <Box component="ol" sx={{ pl: 2, m: 0, '& li': { mb: 0.5, fontSize: '0.875rem' } }}>
-                    {isIOS() ? (
-                      <>
-                        <li>Open any UPI app (GPay, PhonePe, Paytm, etc.)</li>
-                        <li>Tap "Send Money" or "Pay"</li>
-                        <li>Enter the UPI ID shown above</li>
-                        <li>Enter amount: ₹{tenant.rentAmount.toLocaleString()}</li>
-                        <li>Complete payment and copy the UTR number</li>
-                        <li>Return here and enter UTR below</li>
-                      </>
-                    ) : (
-                      <>
-                        <li>Click "Pay via UPI" button below</li>
-                        <li>Choose your UPI app from popup (GPay, PhonePe, Paytm, etc.)</li>
-                        <li>Complete payment with pre-filled details</li>
-                        <li>Return here and enter UTR number</li>
-                      </>
-                    )}
-                  </Box>
-                </Box>
-                {!isIOS() && (
-                  <Box component="div">
-                    <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 0.5 }}>Option 2: Manual Payment</Typography>
-                    <Box component="ol" sx={{ pl: 2, m: 0, '& li': { mb: 0.5, fontSize: '0.875rem' } }}>
-                      <li>Open any UPI app on your phone</li>
-                      <li>Enter the UPI ID shown above</li>
-                      <li>Enter amount: ₹{tenant.rentAmount.toLocaleString()}</li>
-                      <li>Complete payment and enter UTR here</li>
-                    </Box>
-                  </Box>
-                )}
               </Alert>
 
-              {/* Pay Button */}
+              {/* Already Paid Option */}
               <Button
                 variant="contained"
-                color="success"
-                size="large"
-                fullWidth
-                onClick={handlePayViaUpi}
-                startIcon={<PaymentIcon />}
-                sx={{
-                  py: 2,
-                  fontSize: '1.125rem',
-                  fontWeight: 'bold',
-                  mb: 2,
-                }}
-              >
-                {isIOS() 
-                  ? `Continue to Payment (₹${tenant.rentAmount.toLocaleString()})`
-                  : `Pay ₹${tenant.rentAmount.toLocaleString()} via UPI`
-                }
-              </Button>
-
-              {/* Manual Entry Option */}
-              <Button
-                variant="outlined"
+                color="primary"
                 size="large"
                 fullWidth
                 onClick={() => setStep('utr')}
-                sx={{ py: 1.5 }}
+                startIcon={<CheckCircleIcon />}
+                sx={{
+                  py: 2,
+                  fontSize: '1rem',
+                  fontWeight: 'bold',
+                }}
               >
-                Already Paid? Enter UTR
+                Already Paid? Enter UTR Number
               </Button>
             </CardContent>
           </Card>
