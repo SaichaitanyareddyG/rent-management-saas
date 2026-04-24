@@ -33,6 +33,7 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/pay/**").permitAll()  // Public payment portal
                         .requestMatchers("/public/**").permitAll()  // Public APIs (tenant payment)
+                        .requestMatchers("/actuator/**").permitAll()  // Health check endpoint
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
