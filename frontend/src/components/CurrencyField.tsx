@@ -3,12 +3,12 @@
  * Fixes the "0" input issue and formats amounts as 2,00,000
  */
 
-import { TextField, TextFieldProps, InputAdornment } from '@mui/material';
+import { TextField, InputAdornment } from '@mui/material';
 import { CurrencyRupee as CurrencyRupeeIcon } from '@mui/icons-material';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, ComponentProps } from 'react';
 import { formatIndianNumber, parseFormattedNumber } from '../utils/formatters';
 
-interface CurrencyFieldProps extends Omit<TextFieldProps, 'onChange' | 'value' | 'type'> {
+interface CurrencyFieldProps extends Omit<ComponentProps<typeof TextField>, 'onChange' | 'value' | 'type'> {
   value: number | string;
   onChange: (value: number) => void;
   showIcon?: boolean;
