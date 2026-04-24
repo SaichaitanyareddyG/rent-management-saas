@@ -28,7 +28,9 @@ public class CorsConfig {
             "http://localhost:5177",
             "http://localhost:5178",
             "http://localhost:5179",
-            "http://localhost:3000"
+            "http://localhost:3000",
+            "https://rent-management-saas.vercel.app",
+            "https://rent-management-saas-*.vercel.app"  // Preview deployments
         ));
         
         // Allow all HTTP methods
