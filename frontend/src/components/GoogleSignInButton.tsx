@@ -5,7 +5,7 @@
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
+import { GoogleLogin } from '@react-oauth/google';
 import { Box, Typography } from '@mui/material';
 import { useGoogleLoginMutation } from '../services/authApi';
 import { ProfileCompletionModal } from './ProfileCompletionModal';
@@ -18,7 +18,7 @@ export function GoogleSignInButton() {
   const [pendingCredential, setPendingCredential] = useState<string | null>(null);
   const [userName, setUserName] = useState('');
 
-  const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+  const handleGoogleSuccess = async (credentialResponse: any) => {
     if (!credentialResponse.credential) {
       toast.error('Google login failed');
       return;
