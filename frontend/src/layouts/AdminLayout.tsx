@@ -97,13 +97,13 @@ export const AdminLayout = () => {
       .slice(0, 2);
   };
 
-  const navItems = [t('nav.dashboard'), icon: <DashboardIcon /> },
+  const navItems = [
+    { path: '/dashboard', label: t('nav.dashboard'), icon: <DashboardIcon /> },
     { path: '/tenants', label: t('nav.tenants'), icon: <PeopleIcon /> },
     { path: '/payments', label: t('nav.payments'), icon: <PaymentIcon /> },
     { path: '/properties', label: t('nav.properties'), icon: <HomeIcon /> },
     { path: '/rooms', label: t('nav.rooms'), icon: <RoomIcon /> },
-    { path: '/settings', label: t('nav.settings'): <RoomIcon /> },
-    { path: '/settings', label: 'Settings', icon: <SettingsIcon /> },
+    { path: '/settings', label: t('nav.settings'), icon: <SettingsIcon /> },
   ];
 
   const closeSidebar = () => {
