@@ -29,6 +29,7 @@ import {
   Payment as PaymentIcon,
   ArrowBack as ArrowBackIcon,
   CheckCircle as CheckCircleIcon,
+  ContentCopy as CopyIcon,
 } from '@mui/icons-material';
 
 export const TenantPaymentPage = () => {
@@ -53,11 +54,21 @@ export const TenantPaymentPage = () => {
 
   const handlePayViaUpi = () => {
     const upiLink = generateUpiLink();
-    window.location.href = upiLink;
     
+    // Open UPI deep link - triggers app chooser on mobile
+    window.open(upiLink, '_self');
+    
+    // Show UTR form after brief delay
     setTimeout(() => {
       setStep('utr');
-    }, 1000);
+    }, 1500);
+  };
+
+  const handleCopyUpiId = () => {
+    if (tenant?.upiId) {
+      navigator.clipboard.writeText(tenant.upiId);
+      toast.success('UPI ID copied to clipboard!');
+    }
   };
 
   const handleConfirmPayment = async (e: React.FormEvent) => {
@@ -327,6 +338,64 @@ export const TenantPaymentPage = () => {
                   Please complete payment using any UPI app and enter the transaction reference below.
                 </Typography>
               </Alert>
+
+              {/* Owner UPI ID with Copy Button */}
+              <Box
+                sx={{
+                  bgcolor: '#f0fdf4',
+                  border: '2px solid #10b981',
+                  borderRadius: 2,
+                  p: 2.5,
+                  mb: 3,
+                }}
+              >
+                <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: '#059669', mb: 1.5 }}>
+                  💳 Owner's UPI ID
+                </Typography>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                    bgcolor: 'white',
+                    borderRadius: 1,
+                    p: 2,
+                  }}
+                >
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      flex: 1,
+                      fontWeight: 'bold',
+                      color: '#1f2937',
+                      fontFamily: 'monospace',
+                      wordBreak: 'break-all',
+                      userSelect: 'all',
+                    }}
+                  >
+                    {tenant.upiId}
+                  </Typography>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={handleCopyUpiId}
+                    startIcon={<CopyIcon />}
+                    sx={{
+                      minWidth: 'auto',
+                      whiteSpace: 'nowrap',
+                      bgcolor: 'white',
+                      '&:hover': {
+                        bgcolor: '#f9fafb',
+                      },
+                    }}
+                  >
+                    Copy
+                  </Button>
+                </Box>
+                <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                  Use this UPI ID if paying manually from your UPI app
+                </Typography>
+              </Box>
 
               <Box component="form" onSubmit={handleConfirmPayment} sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                 <TextField
