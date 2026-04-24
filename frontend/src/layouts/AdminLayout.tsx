@@ -332,7 +332,12 @@ export const AdminLayout = () => {
               <MenuItem
                 onClick={() => {
                   handleProfileMenuClose();
-                  navigate('/settings');{t('nav.settings')}</Typography>
+                  navigate('/settings');
+                }}
+                sx={{ gap: 1.5, py: 1.5 }}
+              >
+                <SettingsIcon fontSize="small" sx={{ color: '#6B7280' }} />
+                <Typography variant="body2">{t('nav.settings')}</Typography>
               </MenuItem>
               <Divider />
               <MenuItem
@@ -343,12 +348,7 @@ export const AdminLayout = () => {
                 sx={{ gap: 1.5, py: 1.5, color: '#EF4444' }}
               >
                 <LogoutIcon fontSize="small" />
-                <Typography variant="body2">{t('common.logout')}
-                }}
-                sx={{ gap: 1.5, py: 1.5, color: '#EF4444' }}
-              >
-                <LogoutIcon fontSize="small" />
-                <Typography variant="body2">Logout</Typography>
+                <Typography variant="body2">{t('common.logout')}</Typography>
               </MenuItem>
             </Menu>
           </Box>
