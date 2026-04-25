@@ -31,7 +31,9 @@ public class PublicController {
     /**
      * NEW: Create payment session with unique amount
      * Step 1 of payment flow - generates intent token and unique amount
+     * TODO: Implement after verification system is fully integrated
      */
+    /*
     @PostMapping("/payment-session")
     public ResponseEntity<PaymentSessionResponse> createPaymentSession(
             @RequestParam Long tenantId,
@@ -40,6 +42,7 @@ public class PublicController {
         PaymentSessionResponse response = publicPaymentService.createPaymentSession(tenantId, request);
         return ResponseEntity.ok(response);
     }
+    */
     
     /**
      * Get tenant details for payment page (public, no auth)

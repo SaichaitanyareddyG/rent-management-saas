@@ -2,6 +2,7 @@ package com.rentapp.rentapp.service;
 
 import com.rentapp.rentapp.entity.PaymentIntent;
 import com.rentapp.rentapp.entity.Tenant;
+import com.rentapp.rentapp.enums.PaymentIntentStatus;
 import com.rentapp.rentapp.repository.PaymentIntentRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +42,7 @@ public class PaymentIntentService {
         
         if (existingIntent.isPresent()) {
             PaymentIntent intent = existingIntent.get();
-            intent.setStatus("CANCELLED");
+            intent.setStatus(PaymentIntentStatus.CANCELLED);
             paymentIntentRepository.save(intent);
             log.info("Cancelled previous active intent {} for tenant {}", intent.getIntentToken(), tenant.getId());
         }
@@ -59,7 +60,7 @@ public class PaymentIntentService {
         intent.setAmountOffset(offset);
         intent.setCreatedAt(LocalDateTime.now());
         intent.setExpiresAt(LocalDateTime.now().plusMinutes(INTENT_VALIDITY_MINUTES));
-        intent.setStatus("ACTIVE");
+        intent.setStatus(PaymentIntentStatus.ACTIVE);
         intent.setAttemptCount(0);
 
         // Session binding
@@ -126,7 +127,7 @@ public class PaymentIntentService {
      */
     @Transactional
     public void markIntentAsUsed(PaymentIntent intent, Long paymentId) {
-        intent.setStatus("USED");
+        intent.setStatus(PaymentIntentStatus.USED);
         intent.setPaymentId(paymentId);
         paymentIntentRepository.save(intent);
         log.info("Marked intent {} as USED for payment {}", intent.getIntentToken(), paymentId);
@@ -142,7 +143,7 @@ public class PaymentIntentService {
                 .findExpiredIntents(LocalDateTime.now());
 
         for (PaymentIntent intent : expired) {
-            intent.setStatus("EXPIRED");
+            intent.setStatus(PaymentIntentStatus.EXPIRED);
         }
 
         if (!expired.isEmpty()) {
