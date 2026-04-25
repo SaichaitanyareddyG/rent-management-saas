@@ -44,11 +44,11 @@ public class PaymentIntent {
     @JoinColumn(name = "tenant_id", nullable = false)
     private Tenant tenant;
     
-    // Legacy fields for backward compatibility with PaymentService
-    @Column
+    // Legacy fields for backward compatibility with PaymentService (READ-ONLY)
+    @Column(name = "tenant_id", insertable = false, updatable = false)
     private Long tenantId;  // Deprecated: use tenant.getId() instead
     
-    @Column
+    @Column(insertable = false, updatable = false)
     private Double amount;  // Deprecated: use baseAmount instead
     
     @Column
